@@ -50,7 +50,7 @@ export default app => {
         db: sequelizeInstance,
         tableName: 'sessions',
       }),
-      secret: env.SESSION_SECRET,
+      secret: process.env.SESSION_SECRET,
       resave: true,
       saveUninitialized: true,
       cookie: {
@@ -89,14 +89,14 @@ export default app => {
             }
             const { returnTo } = req.session;
             return res.redirect(
-              `${env.CLIENT_APP_URL}/auth/user?user_id=${internalUser.id}`,
+              `${process.env.CLIENT_APP_URL}/auth/user?user_id=${internalUser.id}`,
             );
           });
         })
         .catch(createError => {
           if (createError.message === 'Your email has not verified.') {
             return res.redirect(
-              `${env.CLIENT_APP_URL}/auth/email_not_verified`,
+              `${process.env.CLIENT_APP_URL}/auth/email_not_verified`,
             );
           }
           return next(createError);
@@ -108,14 +108,14 @@ export default app => {
     req.session.destroy();
     req.logout();
 
-    const returnTo = env.CLIENT_APP_URL;
+    const returnTo = process.env.CLIENT_APP_URL;
     const port = req.connection.localPort;
 
     const logoutURL = new url.URL(
-      util.format('https://%s/v2/logout', env.AUTH0_BASE_URL),
+      util.format('https://%s/v2/logout', process.env.AUTH0_BASE_URL),
     );
     const searchString = querystring.stringify({
-      client_id: env.AUTH0_CLIENT_ID,
+      client_id: process.env.AUTH0_CLIENT_ID,
       returnTo,
     });
     logoutURL.search = searchString;
