@@ -22,12 +22,14 @@ const sequelizeOptions = {
   dialect: 'postgres',
 };
 
-const sequelize = new Sequelize(env.DATABASE_URL, sequelizeOptions);
+const sequelize = new Sequelize(process.env.DATABASE_URL, sequelizeOptions);
 const db = {};
 
-fs
-  .readdirSync(__dirname)
-  .filter(file => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'))
+fs.readdirSync(__dirname)
+  .filter(
+    file =>
+      file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js',
+  )
   .forEach(file => {
     const model = sequelize.import(path.join(__dirname, file));
     db[model.name] = model;

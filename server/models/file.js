@@ -4,13 +4,13 @@ import cuid from 'cuid';
 const AWS = require('aws-sdk');
 
 const s3 = new AWS.S3({
-  accessKeyId: env.S3_ACCESS_KEY,
-  secretAccessKey: env.S3_SECRET_ACCESS,
-  region: env.S3_REGION,
+  accessKeyId: process.env.S3_ACCESS_KEY,
+  secretAccessKey: process.env.S3_SECRET_ACCESS,
+  region: process.env.S3_REGION,
   signatureVersion: 'v4',
 });
 
-const BUCKET = env.S3_BUCKET;
+const BUCKET = process.env.S3_BUCKET;
 const signedUrlExpireSeconds = 60 * 5 * 360;
 
 export default (sequelize, DataTypes) => {
@@ -41,13 +41,16 @@ export default (sequelize, DataTypes) => {
     file_link: {
       type: DataTypes.VIRTUAL,
       get: function () {
-         return File.getUrl(this.getDataValue('location'));
-       },
+        return File.getUrl(this.getDataValue('location'));
+      },
     },
   });
 
   File.associate = models => {
-    File.belongsTo(models.Provider, { foreignKey: 'fileable_id', constraints: false });
+    File.belongsTo(models.Provider, {
+      foreignKey: 'fileable_id',
+      constraints: false,
+    });
   };
 
   File.generatePresignedUrl = function generatePresignedUrl(name) {
