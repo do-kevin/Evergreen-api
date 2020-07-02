@@ -16,10 +16,10 @@ const admins = JSON.parse(fs.readFileSync(`${rootPath}/admin.json`, 'utf-8'));
 
 const strategy = new Auth0Strategy(
   {
-    domain: env.AUTH0_BASE_URL,
-    clientID: env.AUTH0_CLIENT_ID,
-    clientSecret: env.AUTH0_CLIENT_SECRET,
-    callbackURL: env.AUTH0_CALLBACK_URL,
+    domain: process.env.AUTH0_BASE_URL,
+    clientID: process.env.AUTH0_CLIENT_ID,
+    clientSecret: process.env.AUTH0_CLIENT_SECRET,
+    callbackURL: process.env.AUTH0_CALLBACK_URL,
     state: true,
   },
   (accessToken, refreshToken, extraParams, profile, done) =>
@@ -50,7 +50,7 @@ export default app => {
         db: sequelizeInstance,
         tableName: 'sessions',
       }),
-      secret: env.SESSION_SECRET,
+      secret: process.env.SESSION_SECRET,
       resave: true,
       saveUninitialized: true,
       cookie: {
@@ -61,9 +61,13 @@ export default app => {
   );
   app.use(passport.initialize());
   app.use(passport.session());
-  app.get('/login', passport.authenticate('auth0', { scope: 'openid email' }), (req, res) => {
-    res.redirect('/');
-  });
+  app.get(
+    '/login',
+    passport.authenticate('auth0', { scope: 'openid email' }),
+    (req, res) => {
+      res.redirect('/');
+    },
+  );
   // Perform the final stage of authentication and redirect to previously requested URL or '/user'
   app.get('/callback', (req, res, next) => {
     passport.authenticate('auth0', (err, user) => {
@@ -84,12 +88,16 @@ export default app => {
               return next(loginErr);
             }
             const { returnTo } = req.session;
-            return res.redirect(`${env.CLIENT_APP_URL}/auth/user?user_id=${internalUser.id}`);
+            return res.redirect(
+              `${process.env.CLIENT_APP_URL}/auth/user?user_id=${internalUser.id}`,
+            );
           });
         })
         .catch(createError => {
           if (createError.message === 'Your email has not verified.') {
-            return res.redirect(`${env.CLIENT_APP_URL}/auth/email_not_verified`);
+            return res.redirect(
+              `${process.env.CLIENT_APP_URL}/auth/email_not_verified`,
+            );
           }
           return next(createError);
         });
@@ -100,12 +108,14 @@ export default app => {
     req.session.destroy();
     req.logout();
 
-    const returnTo = env.CLIENT_APP_URL;
+    const returnTo = process.env.CLIENT_APP_URL;
     const port = req.connection.localPort;
 
-    const logoutURL = new url.URL(util.format('https://%s/v2/logout', env.AUTH0_BASE_URL));
+    const logoutURL = new url.URL(
+      util.format('https://%s/v2/logout', process.env.AUTH0_BASE_URL),
+    );
     const searchString = querystring.stringify({
-      client_id: env.AUTH0_CLIENT_ID,
+      client_id: process.env.AUTH0_CLIENT_ID,
       returnTo,
     });
     logoutURL.search = searchString;
