@@ -230,7 +230,7 @@ export default class Controller {
       Activated: 'rgb(0,0,255)',
       Completed: 'rgb(0,255,0)',
       Approved: 'rgb(0,0,255)',
-      Unenrolled: 'rgba(255,255,0,0.2)',
+      Unenrolled: 'rgb(211,211,211)',
       Failed: 'rgb(255,99,132)',
     };
 
