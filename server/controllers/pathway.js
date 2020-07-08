@@ -1,6 +1,4 @@
-import {
-  Pathway, Provider, DataField, Enrollment, Offer,
-} from '@/models';
+import { Pathway, Provider, DataField, Enrollment, Offer } from '@/models';
 import { compact, filter, map } from 'lodash';
 import DataFieldService from '@/services/datafield';
 import SequelizeHelperService from '@/services/sequelize-helper';
@@ -232,7 +230,7 @@ export default class Controller {
       Activated: 'rgb(0,0,255)',
       Completed: 'rgb(0,255,0)',
       Approved: 'rgb(0,0,255)',
-      Unenrolled: 'rgba(255,255,0,0.2)',
+      Unenrolled: 'rgb(211,211,211)',
       Failed: 'rgb(255,99,132)',
     };
 
@@ -292,11 +290,14 @@ export default class Controller {
 
     const labels = semesters.map(s => {
       const [sem, year] = s.split('-');
-      return `${sem.substring(0, 2)}-${year.slice(-2)}`;
+      return `${sem}-${year}`;
     });
 
     return res.status(200).send({
-      labels, datasets, dataLookUp, statuses,
+      labels,
+      datasets,
+      dataLookUp,
+      statuses,
     });
   }
 }
